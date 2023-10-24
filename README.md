@@ -1,0 +1,1 @@
+# syuwatto-translator
