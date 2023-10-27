@@ -40,7 +40,9 @@ RUN pip3 install \
         wheel --verbose
 
 # socket通信用
-RUN pip3 install websockets
+RUN pip3 install \
+    websockets \
+    mediapipe
 
 # 
 
