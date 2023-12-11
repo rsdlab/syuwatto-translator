@@ -45,7 +45,11 @@ RUN pip3 install \
     mediapipe
 
 # 
-
+RUN pip3 install \
+    gTTS \
+    SpeechRecognition \
+    pykakasi
+    
 # userの設定
 ARG username=socket
 ARG wkdir=/home/${username}/
