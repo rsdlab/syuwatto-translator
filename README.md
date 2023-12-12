@@ -5,7 +5,7 @@
 ## Contributors
 Satoshi Kikuchi ([m-SKikuchi](https://github.com/m-SKikuchi))<br>
 Kazuya Yabashi ([yakazuya](https://github.com/yakazuya))<br>
-Masatomo Inoue ([InoueMasatomo](https://github.com/InoueMasatomo))
+Masatomo Inoue ([InoueMasatomo](https://github.com/InoueMasatomo))<br>
 AyatoTakagi ([tadrone]([https://github.com/Yukiya-Yamamoto](https://github.com/tadrone)))
 ## Contacts
 
