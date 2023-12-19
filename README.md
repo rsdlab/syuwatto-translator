@@ -9,4 +9,4 @@ Masatomo Inoue ([InoueMasatomo](https://github.com/InoueMasatomo))<br>
 AyatoTakagi ([tadrone](https://github.com/tadrone))
 ## Contacts
 
-If you have further question, email to 233427037@ccmailg.meijo-u.ac.jp.
+If you have further question, email to 233427037@ccmailg.meijo-u.ac.jp
