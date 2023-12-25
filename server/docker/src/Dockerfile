@@ -41,11 +41,18 @@ RUN pip3 install \
 
 # socket通信用
 RUN pip3 install \
-    websockets \
+    websockets
+
+# 指文字検出用
+RUN pip install \
     mediapipe
 
-# 
-
+# 音声処理用
+RUN pip3 install \
+    gTTS \
+    SpeechRecognition \
+    pykakasi
+    
 # userの設定
 ARG username=socket
 ARG wkdir=/home/${username}/
