@@ -46,7 +46,7 @@
 
 詳しくは以下の動画をご覧ください
 
-![movie1](https://github.com/rsdlab/syuwatto-translator/assets/105686812/fd62dd02-c0c1-43e5-8c7f-474890054772)
+[![movie1](./images/backcolor.png)](https://github.com/rsdlab/syuwatto-translator/assets/105686812/fd62dd02-c0c1-43e5-8c7f-474890054772)
 
 ## システムモデル
 
