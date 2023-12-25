@@ -1,3 +1,7 @@
+"""
+syuwatto-translator用serverプログラム
+"""
+
 import socket
 import threading
 import os 
