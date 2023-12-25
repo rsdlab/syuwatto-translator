@@ -26,11 +26,11 @@
 ## センサーについて
 この製品を扱うにあたって、SPRESENSEとセンサーの接続は以下の画像を参考にしてください。
 
-![接続](./image/image1.png)
+![接続](./images/image1.png)
 
 また、仕様書は以下の通りになります。
 
-![仕様](./image/image2.png)
+![仕様](./images/image2.png)
 
 ## 使い方
 
@@ -57,7 +57,7 @@
 
 本製品のシステム構成のイメージ図は以下の通りです。
 
-![system](./image/system.png)
+![system](./images/system.png)
 
 ## Contributors
 Satoshi Kikuchi ([m-SKikuchi](https://github.com/m-SKikuchi))<br>
