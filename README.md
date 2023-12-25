@@ -12,7 +12,7 @@
 
 ・spresense ： SPRESENSEに書き込むプログラム
 
-・server ： serber用のプログラム
+・server ： server用のプログラム
 
 ## ビルド
 1.SPRESENSEのArduinoプロジェクトがビルドできる状態にします(詳細はSonyのSPRESENSE公式ページをご覧ください)。
@@ -28,7 +28,7 @@
 
 ![接続](./images/image1.png)
 
-また、仕様書は以下の通りになります。
+また、仕様書?パーツリスト？は以下の通りになります。
 
 ![仕様](./images/image2.png)
 
