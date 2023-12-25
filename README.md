@@ -3,14 +3,21 @@
 ![Static Badge](https://img.shields.io/badge/Sony-Spresense-blue)
 
 ## 製品について
-本製品は〇〇を行うデバイスである。
+本製品は指文字を用いた円滑なコミュニケーションを助けるデバイスである。
+
+![製品](./images/product1.png)
 
 ## レポジトリの構成
+・hardware ： 3Dモデルや配線、パーツリスト等のハード設計に関するデータ
+
+・spresense ： SPRESENSEに書き込むプログラム
+
+・server ： serber用のプログラム
 
 ## ビルド
 1.SPRESENSEのArduinoプロジェクトがビルドできる状態にします(詳細はSonyのSPRESENSE公式ページをご覧ください)。
 
-2.ArudinoIDEでcompleted formフォルダにある〇〇.inoを開いてください。
+2.ArudinoIDEで〇〇にある〇〇.inoを開いてください。
 
 3.SPRESENSEをPCに接続します。
 
@@ -36,13 +43,11 @@
 ## 機能
 本製品の機能は以下の通りです。
 
-・
+・指文字から音声への翻訳
 
-・
+・音声からテキストへの翻訳
 
-・
-
-・
+・指文字の練習機能
 
 詳しくは以下の動画をご覧ください
 
@@ -51,10 +56,6 @@
 ## システムモデル
 
 本製品のシステム構成のイメージ図は以下の通りです。
-
-
-
-
 
 ![system](./image/system.png)
 
