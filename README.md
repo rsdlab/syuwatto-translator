@@ -17,11 +17,13 @@
 ## ビルド
 1.SPRESENSEのArduinoプロジェクトがビルドできる状態にします(詳細はSonyのSPRESENSE公式ページをご覧ください)。
 
-2.ArudinoIDEで〇〇にある〇〇.inoを開いてください。
+2.ArudinoIDEで~/syuwatto-translator/spresense/program/WebCameraにあるWebCamera.inoを開いてください。
 
-3.SPRESENSEをPCに接続します。
+3.~/syuwatto-translator/spresense/program/WebCameraにあるconfig.h内の「AP_SSID」「PASSPHRASE」「SERVER_IP」「SERVER_PORT」をそれぞれ指定してください。
 
-4.〇〇.inoをマイコンに書き込みます。
+4.SPRESENSEをPCに接続します。
+
+5.WebCamera.inoをマイコンに書き込みます。
 
 ## センサーについて
 この製品を扱うにあたって、SPRESENSEとセンサーの接続は以下の画像を参考にしてください。
@@ -34,10 +36,39 @@
 
 ## 使い方
 
-
 ## クラウド(サーバー)側使い方
-```bash
+サーバ側の処理はubuntuがインストールされたPCでの動作を想定している。
 
+### このリポジトリのクローン
+このリポジトリを自身のホームディレクトリにクローンする。
+```sh
+$ cd ~/
+$ git clone https://github.com/rsdlab/syuwatto-translator.git
+```
+
+### Dockerイメージの作成
+以下のコマンドにてDockerのビルドを行う。
+```sh
+$ cd ~/syuwatto-translator/server/docker
+$ ./build.sh
+```
+
+### Dockerコンテナの起動
+ビルドが終了したら、以下のコマンドにてDockerコンテナを起動する。
+```sh
+$ ./run.sh
+```
+
+### ネットワークの接続
+本デバイスを接続するネットワークにサーバとして使用するPCを接続する。
+
+### IPアドレス等の設定
+~/syuwatto-translator/server/shared_dir/server.py内のIPとPORTを自身の環境に応じて設定する。
+
+### サーバの起動
+以下のコマンドにてサーバを起動する。
+```sh
+$ python3 server.py
 ```
 
 ## 機能
