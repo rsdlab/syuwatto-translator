@@ -6,16 +6,8 @@ import numpy as np
 import os
 import re
 from rich.progress import track
-import shutil
-import tensorflow as tf
 import time
-import warnings
 from utils import *
-# 関数まとめたやつ
-from tools import *
-
-tf.get_logger().setLevel("ERROR")
-warnings.simplefilter('ignore')
 
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
@@ -23,34 +15,21 @@ mp_hands = mp.solutions.hands
 # 定数宣言
 LANDMARK_LIST = ['WRIST', 'THUMB_CMC', 'THUMB_MCP', 'THUMB_IP', 'THUMB_TIP', 'INDEX_FINGER_MCP', 'INDEX_FINGER_PIP', 'INDEX_FINGER_DIP', 'INDEX_FINGER_TIP', 'MIDDLE_FINGER_MCP', 'MIDDLE_FINGER_PIP', 'MIDDLE_FINGER_DIP', 'MIDDLE_FINGER_TIP', 'RING_FINGER_MCP', 'RING_FINGER_PIP', 'RING_FINGER_DIP', 'RING_FINGER_TIP', 'PINKY_MCP', 'PINKY_PIP', 'PINKY_DIP', 'PINKY_TIP']
 
-DATASET_IMAGE_DIR = '/workspace/dataset/test_translate'
-RESULT_DIR = '/workspace/result/test_translate'
 TEMPLATE_DIR = '/workspace/dataset/template'
 RESULT_IMAGE_DIR = f'/workspace/result/test_translate/image'
-# SAVE_CSV_DIR = f'{RESULT_DIR}/csv'
 
 TEMPLATE_CSV_PATH = f'{TEMPLATE_DIR}/landmark_template.csv'
 TEMPLATE_SHAPE_CSV_PATH = f'{TEMPLATE_DIR}/template_shape.csv'
 OUTPUT_CSV_PATH = f'{TEMPLATE_DIR}/output.csv'
-# SAVE_CSV_PATH = f'{SAVE_CSV_DIR}/landmark.csv'
 
-# グローバル変数の定義
-answer_words = []
-
-def fields_name():
-    # CSVのヘッダを準備
-    fields = []
-    fields.append('file_name')
-    for landmark in LANDMARK_LIST:
-        fields.append(f'{landmark}_x')
-        fields.append(f'{landmark}_y')
-        fields.append(f'{landmark}_z')
-    return fields
-
-def img2text(img_list):
+def img2text(img_list, debug):
+    pattern =  re.compile(r'\/')
+    pattern2 = re.compile(r'\.')
+    pattern3 = re.compile(r'\_')
+    
+    answer_words = []
     start_time = time.perf_counter()
     template_num_list = []
-    template_idx_list = []
     template_points_list = []
     
     output_flag = False
@@ -58,9 +37,9 @@ def img2text(img_list):
     last_output_index = None
     last_coordinate_list = []
     
-    # 結果の保存ディレクトリの初期化
-    if os.path.exists(RESULT_IMAGE_DIR):
-        shutil.rmtree(RESULT_IMAGE_DIR)
+    jpg_files = glob.glob(os.path.join(RESULT_IMAGE_DIR, "*.jpg"))
+    for jpg_file in jpg_files:
+        os.remove(jpg_file)
     
     # 出力する文字と識別結果の数字の対応を確認するlistの読み込み
     with open(OUTPUT_CSV_PATH, 'r') as f:
@@ -75,6 +54,8 @@ def img2text(img_list):
         reader = csv.reader(f)
         header = next(reader)
         for row in reader:
+            file_number = pattern3.split(row[0])[-1]
+            template_num_list.append(file_number)
             points = []
             for j in range(21):
                 x = row[(3 * j) + 1]
@@ -84,26 +65,6 @@ def img2text(img_list):
                 np_points = np.array(points)
                 np_points_T = np_points.T
             template_points_list.append(np_points_T.tolist())
-    
-    # 対象画像の一覧を取得
-    # targetPattern = f'{DATASET_IMAGE_DIR}/*.jpg'
-    # file_list = sorted(glob.glob(targetPattern))
-    
-    # テンプレート画像の一覧を取得
-    targetPattern_template = f'{TEMPLATE_DIR}/*.jpg'
-    template_img_list = sorted(glob.glob(targetPattern_template))
-    
-    # 判定する文字の一覧を取得
-    pattern =  re.compile(r'\/')
-    pattern2 = re.compile(r'\.')
-    pattern3 = re.compile(r'\_')
-    for template_img in template_img_list:
-        file_name = pattern.split(template_img)[4]
-        file_name2 = pattern2.split(file_name)[0]
-        file_index = int(pattern3.split(file_name2)[0])
-        file_number = int(pattern3.split(file_name2)[1])
-        template_idx_list.append(file_index)
-        template_num_list.append(file_number)
     
     with mp_hands.Hands(static_image_mode=True, max_num_hands=2, min_detection_confidence=0.5) as hands:
         for idx, img in enumerate(track(img_list)):
@@ -117,7 +78,7 @@ def img2text(img_list):
                 last_num = None
             
             # 画像を読み取り、利き手が正しく出力されるようにy軸を中心に反転
-            image = cv2.flip(img, 1)
+            image = cv2.flip(cv2.imread(img), 1)
             
             # 処理する前にBGR画像をRGBに変換
             results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
@@ -136,6 +97,11 @@ def img2text(img_list):
                 continue
             
             hand_side = results.multi_handedness[0].classification[0].label
+            
+            if debug == True:
+                name = pattern.split(img)[-1]
+                name2 = pattern2.split(name)[0]
+                gt = int(pattern3.split(name2)[-1])
             
             # 右手で入力された場合は反転させる
             if hand_side == 'Right':
@@ -199,6 +165,10 @@ def img2text(img_list):
             for index, out in enumerate(check_output_list):
                 if f'{answer_number}' in out:
                     output_index = index
+                
+                if debug == True:
+                    if f'{gt}' in out:
+                        gt_index = index
             
             # 確認用
             # 出力用に画像をコピー
@@ -221,9 +191,15 @@ def img2text(img_list):
             cv2.putText(annotated_image_fliped, text = 'x', org = (10, 15), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.7, color=(0, 0, 255), thickness=2, lineType=cv2.LINE_4)
             cv2.putText(annotated_image_fliped, text = 'y', org = (65, 70), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.7, color=(255, 0, 0), thickness=2, lineType=cv2.LINE_4)
             
-            text_list = [[f'hand : {hand_side}', (image_width * (1 / 10)), (image_height * (15 / 20))], [f'{hand_direction} {finger_shape_list}', (image_width * (1 / 10)), (image_height * (16 / 20))], [f'answer : {template_num_list[answer_index]} "{check_output_list[output_index][2]}"', (image_width * (1 / 10)), (image_height * (17 / 20))], [f'pred : {distance_list[distance_list.index(min(distance_list))]}', (image_width * (1 / 10)), (image_height * (18 / 20))]]
+            if debug == True:
+                text_list = [[f'hand : {hand_side}', (image_width * (1 / 10)), (image_height * (15 / 20))], [f'{hand_direction} {finger_shape_list}', (image_width * (1 / 10)), (image_height * (16 / 20))], [f'answer : {template_num_list[answer_index]} "{check_output_list[output_index][2]}" , GT : {gt} "{check_output_list[gt_index][2]}"', (image_width * (1 / 10)), (image_height * (17 / 20))], [f'pred : {distance_list[distance_list.index(min(distance_list))]}, GT : {distance_list[template_num_list.index(gt)]}', (image_width * (1 / 10)), (image_height * (18 / 20))]]
+            
+            else:
+                text_list = [[f'hand : {hand_side}', (image_width * (1 / 10)), (image_height * (15 / 20))], [f'{hand_direction} {finger_shape_list}', (image_width * (1 / 10)), (image_height * (16 / 20))], [f'answer : {template_num_list[answer_index]} "{check_output_list[output_index][2]}"', (image_width * (1 / 10)), (image_height * (17 / 20))], [f'pred : {distance_list[distance_list.index(min(distance_list))]}', (image_width * (1 / 10)), (image_height * (18 / 20))]]
+            
             output_path = f'{RESULT_IMAGE_DIR}/annotated_image_{idx}.jpg'
             output(RESULT_IMAGE_DIR, annotated_image_fliped, text_list, output_path)
+            # output(RESULT_IMAGE_DIR, annotated_image_fliped, None, output_path)
             
             # 計算結果が閾値以下の時
             if float(distance_list[answer_index]) <= float(threshold_distance_list[answer_index]):
@@ -242,7 +218,7 @@ def img2text(img_list):
                             continue
                         
                         # 今回が「り」の2フレーム目ではない場合は前回の「う」が確定
-                        elif last_answer_index != 2:
+                        elif answer_index != 2:
                             answer_words.append(check_output_list[last_output_index][1])
                     
                     # 「の」or「ひ」
@@ -261,12 +237,12 @@ def img2text(img_list):
                             last_answer_number= 26
                             for index, out in enumerate(check_output_list):
                                 if f'{last_answer_number}' in out:
-                                    output_index = index
+                                    last_output_index = index
                             answer_words.append(check_output_list[last_output_index][1])
-                            output_flag = True
-                            if (idx == (len(img) - 1)) and (answer_index not in [42, 43, 44]):
+                            output_flag = False
+                            if (idx == (len(img_list) - 1)) and (answer_index not in [42, 43, 44]):
                                 answer_words.append(check_output_list[output_index][1])
-                            continue
+                            # continue
                     
                     # 「も」
                     if last_answer_index == 33:
@@ -338,7 +314,7 @@ def img2text(img_list):
                     last_answer_index = answer_index
                     last_output_index = output_index
                     last_coordinate_list = coordinate_list
-                    if (idx == (len(img) - 1)) and (answer_index not in [42, 43, 44]):
+                    if (idx == (len(img_list) - 1)) and (answer_index not in [42, 43, 44]):
                         answer_words.append(check_output_list[output_index][1])
                     continue
                 
@@ -367,6 +343,3 @@ def img2text(img_list):
     print(f'time : {(end_time - start_time):.03f}s')
     result = "".join(answer_words)
     return result
-
-if __name__ == "__main__":
-    main()
